@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # 22-8-2020
+# update pi-hole rules to block or unblock youtube.com
 import argparse
 import sys
 import subprocess
