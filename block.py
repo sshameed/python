@@ -6,6 +6,7 @@
 # schedule this script from cron on the host running pi-hole (https://pi-hole.net)
 import argparse
 import sys
+import os
 import subprocess
 import logging
 
@@ -32,12 +33,12 @@ def blockSites():
             tempblocklist.append(i)
     if tempblocklist:
         for k in tempblocklist:
-            t1 = subprocess.Popen(["/usr/local/bin/pihole", "--regex", k], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "--regex", k], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
             if t1[0]:
                 logging.info(t1[0])
             if t1[1]:
                 logging.error(t1[1])
-            t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
             if t1[0]:
                 logging.info(t1[0])
             if t1[1]:
@@ -57,12 +58,12 @@ def unblockSites():
             tempunblocklist.append(i)
     if tempunblocklist:
         for k in tempunblocklist:
-            t1 = subprocess.Popen(["/usr/local/bin/pihole", "--regex", "-d", k], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "--regex", "-d", k], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
             if t1[0]:
                 logging.info(t1[0])
             if t1[1]:
                 logging.error(t1[1])
-            t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
             if t1[0]:
                 logging.info(t1[0])
             if t1[1]:
@@ -80,15 +81,17 @@ if __name__ == "__main__":
     args = my_parser.parse_args()
     arg1 = args.action
 
-if (arg1 == "block"):
-    print("proceeding to block sites ...")
-    blockSites()
-elif (arg1 == "unblock"):
-    print("proceeding to unblock sites ...")
-    unblockSites()
-elif (arg1 == "list"):
-    print("blocked sites are given below: ")
-    listblockedSites()
-else:
-    print("usage error: invalid argument")
-    sys.exit(1)
+    my_env=os.environ.copy()
+
+    if (arg1 == "block"):
+        print("proceeding to block sites ...")
+        blockSites()
+    elif (arg1 == "unblock"):
+        print("proceeding to unblock sites ...")
+        unblockSites()
+    elif (arg1 == "list"):
+        print("blocked sites are given below: ")
+        listblockedSites()
+    else:
+        print("usage error: invalid argument")
+        sys.exit(1)
