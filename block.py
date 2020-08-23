@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # 23-8-2020
-# update pi-hole rules to block or unblock youtube.com
+# this script can be used to block or unblock access to specific sites, such as youtube.com at specific times
+# schedule this script from cron on the host running pi-hole (https://pi-hole.net)
+# update list regexBlackList with regular expression for websites that you want to block
+# schedule this script from cron on the host running pi-hole (https://pi-hole.net)
 import argparse
 import sys
 import subprocess
@@ -29,12 +32,16 @@ def blockSites():
             tempblocklist.append(i)
     if tempblocklist:
         for k in tempblocklist:
-            t1 = subprocess.run(["/usr/local/bin/pihole", "--regex", k], capture_output=True,encoding='utf-8')
-            print(t1.stdout)
-            logging.info(t1.stdout)
-            t1 = subprocess.run(["/usr/local/bin/pihole", "restartdns"], capture_output=True,encoding='utf-8')
-            print(t1.stdout)
-            logging.info(t1.stdout)
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "--regex", k], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            if t1[0]:
+                logging.info(t1[0])
+            if t1[1]:
+                logging.error(t1[1])
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            if t1[0]:
+                logging.info(t1[0])
+            if t1[1]:
+                logging.error(t1[1])
     else:
         print("all sites in list are already blocked, nothing to do.")
         logging.info("all sites in list are already blocked, nothing to do.")
@@ -44,18 +51,22 @@ def unblockSites():
     for i in regexBlackList:
         check = checkforBlocked(i)
         if not check:
-            print(i + " is already blocked, nothing to do.")
-            logging.info(i + " is already blocked, nothing to do.")
+            print(i + " is already unblocked, nothing to do.")
+            logging.info(i + " is already unblocked, nothing to do.")
         else:
             tempunblocklist.append(i)
     if tempunblocklist:
         for k in tempunblocklist:
-            t1 = subprocess.run(["/usr/local/bin/pihole", "--regex", "-d", k], capture_output=True,encoding='utf-8')
-            print(t1.stdout)
-            logging.info(t1.stdout)
-            t1 = subprocess.run(["/usr/local/bin/pihole", "restartdns"], capture_output=True,encoding='utf-8')
-            print(t1.stdout)
-            logging.info(t1.stdout)
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "--regex", "-d", k], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            if t1[0]:
+                logging.info(t1[0])
+            if t1[1]:
+                logging.error(t1[1])
+            t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
+            if t1[0]:
+                logging.info(t1[0])
+            if t1[1]:
+                logging.error(t1[1])
     else:
         print("all sites in list are already unblocked, nothing to do.")
         logging.info("all sites in list are already unblocked, nothing to do.")
