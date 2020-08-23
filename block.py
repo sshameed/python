@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# 22-8-2020
+# 23-8-2020
 # update pi-hole rules to block or unblock youtube.com
 import argparse
 import sys
@@ -32,6 +32,9 @@ def blockSites():
             t1 = subprocess.run(["/usr/local/bin/pihole", "--regex", k], capture_output=True,encoding='utf-8')
             print(t1.stdout)
             logging.info(t1.stdout)
+            t1 = subprocess.run(["/usr/local/bin/pihole", "restartdns"], capture_output=True,encoding='utf-8')
+            print(t1.stdout)
+            logging.info(t1.stdout)
     else:
         print("all sites in list are already blocked, nothing to do.")
         logging.info("all sites in list are already blocked, nothing to do.")
@@ -48,6 +51,9 @@ def unblockSites():
     if tempunblocklist:
         for k in tempunblocklist:
             t1 = subprocess.run(["/usr/local/bin/pihole", "--regex", "-d", k], capture_output=True,encoding='utf-8')
+            print(t1.stdout)
+            logging.info(t1.stdout)
+            t1 = subprocess.run(["/usr/local/bin/pihole", "restartdns"], capture_output=True,encoding='utf-8')
             print(t1.stdout)
             logging.info(t1.stdout)
     else:
