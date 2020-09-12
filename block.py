@@ -64,6 +64,7 @@ def unblockSites():
                 logging.info(t1[0])
             if t1[1]:
                 logging.error(t1[1])
+            print("Restarting DNS ...")
             t1 = subprocess.Popen(["/usr/local/bin/pihole", "restartdns"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
             if t1[0]:
                 logging.info(t1[0])
