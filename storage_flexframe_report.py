@@ -112,7 +112,7 @@ highusage_df = pd.DataFrame(high_usage_vol_dict)
 normalusage_df = pd.DataFrame(normal_usage_vol_dict).sort_values(by=['volume_name'],ignore_index=True)
 
 try:
-    t1 = subprocess.Popen(["ssh", "auh2prffan28", "/FlexFrame/scripts/view_hosts"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
+    t1 = subprocess.Popen(["ssh", "ffan1", "/FlexFrame/scripts/view_hosts"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env, encoding='utf-8').communicate()
 except:
     print("error getting view_hosts output.")
 
@@ -153,7 +153,7 @@ ff_services_header = '''
 
 message = message + snapmirror_state_header + snapmirror_state_df.to_html()  +  highusage_header + highusage_df.to_html() + normalusage_header + normalusage_df.to_html() +  ff_services_header + ff_services_df.to_html()
 sender = "flexframe.report@samplecompany.com"
-receivers = ['subin.hameed@mdxsolutions-me.com', 'team@samplecompany.com']
+receivers = ['subin.hameed@sampleconsult.com', 'team@samplecompany.com']
 
 try:
     smtpObj = smtplib.SMTP('smtp.samplecompany.com')
